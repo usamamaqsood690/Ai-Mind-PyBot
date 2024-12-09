@@ -1,0 +1,1079 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MIND - PyBot</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Ace Editor CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ext-language_tools.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+
+    <!-- Bootstrap CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #174064;
+            overflow: auto;
+        }
+    
+        h3 {
+            font-size: 1.2rem;
+            color: #333;
+            text-align: left;
+            font-family: 'Bubblegum Sans', Arial, 'Helvetica Neue', Helvetica, sans-serif, monospace;
+            margin-top: 10px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+    
+        .container-fluid {
+            display: flex;
+            flex-wrap: wrap; /* Allows wrapping on smaller screens */
+            gap: 15px; /* Adds gap between the containers */
+        }
+    
+        #chat-container {
+            background: #e8e8e8;
+            border-radius: 20px;
+            width: 40%;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+
+        }
+        #chat-window {
+            border-bottom: 1px solid #ddd;
+            padding: 25px;
+            height: 70vh;
+            overflow-y: auto;
+            border-radius: 20px;
+            background-color: white;
+        }
+    
+    .d-flex {
+    position: relative; /* Set the parent container's position to relative */
+}
+
+#chat-input {
+    flex: 1;
+    padding: 25px 60px 25px 20px; /* Increased padding for better input area size */
+    margin: 0; /* Remove unnecessary margins */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.6s ease;
+}
+
+#send-btn {
+    position: absolute; /* Position the button absolutely inside the container */
+    top: 50%; /* Center vertically */
+    right: 10px; /* Align to the right inside the input */
+    transform: translateY(-50%); /* Adjust for vertical alignment */
+    background-color: transparent; /* Match the input box background */
+    color: #4a90e2;
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease, background-color 0.3s ease;
+    width: 40px; /* Define width to form the base of the circle */
+    height: 40px; /* Define height to form the base of the circle */
+    display: flex; /* Use flexbox for centering the icon */
+    align-items: center; /* Center the icon vertically */
+    justify-content: center; /* Center the icon horizontally */
+    border-radius: 50%; /* Make the button circular */
+}
+
+#send-btn i {
+    font-size: 1.1rem; /* Adjust icon size */
+}
+
+#send-btn:hover {
+    background-color: #4a90e2; /* Change background to primary color */
+    color: white; /* Change icon color */
+}
+
+        .message {
+            display: flex;
+            margin: 10px 0;
+            align-items: flex-start;
+        }
+
+        .bot-message {
+            justify-content: flex-start;
+        }
+
+        .user-message {
+            justify-content: flex-end;
+            margin-left: auto;
+        }
+        .user-message .emoji {
+        order: 1;
+        margin-left: 0;
+        margin-right: 0;
+    }
+        .message-bubble {
+            padding: 12px 15px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Pretty Neat', cursive;
+            line-height: 1.4;
+            position: relative;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+        }
+        .bot-message .message-bubble {
+            background-color: #f0f8ff;
+            color: #333;
+            overflow-x: auto;
+        }
+        
+        .user-message .message-bubble {
+            background-color: #daf7d8;
+            color: #333;
+            text-align: left;
+        }
+
+ .code-block-container {
+        position: relative;
+        background-color: #2d2d2d;
+        border-radius: 8px;
+        margin: 10px 0;
+        overflow: hidden;
+    }
+
+    .code-block-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #1e1e1e;
+        color: #ffffff;
+        font-size: 12px;
+        padding: 5px 10px;
+    }
+
+    .code-language {
+        font-style: italic;
+    }
+
+    .copy-btn {
+        background-color: transparent;
+        border: none;
+        color: #4a90e2;
+        cursor: pointer;
+        font-size: 12px;
+        padding: 5px;
+        transition: color 0.3s ease;
+    }
+    .copy-btn i {
+    font-size: 16px; /* Adjust icon size */
+}
+
+
+    .copy-btn:hover {
+        color: #ffffff;
+    }
+
+    pre[class*="language-"] {
+        font-family: Consolas, "Courier New", monospace;
+        font-size: 14px;
+        color: #ffffff;
+        background-color: #2d2d2d;
+        padding: 10px;
+        white-space: pre-wrap;
+        overflow-x: auto;
+        margin: 0;
+    }
+    .message-bubble em {
+  font-size: 0.8em; /* Makes the dots smaller */
+  display: inline-block; /* Ensures proper rendering */
+  line-height: 1; /* Aligns the dots nicely */
+}
+
+     /* Styling for operators */
+     .token.operator {
+        color: #ff79c6; /* Bright pink for operators */
+    }
+
+    /* Optional: Add styling for other token types */
+    .token.keyword {
+        color: #8be9fd; /* Cyan for keywords */
+    }
+
+    .token.string {
+        color: #f1fa8c; /* Yellow for strings */
+    }
+
+    .token.function {
+        color: #50fa7b; /* Green for function names */
+    }
+
+    .token.comment {
+        color: #6272a4; /* Gray for comments */
+        font-style: italic;
+    }
+
+        .inline-code {
+            background-color: #dfe6e9;
+            color: #d63031;
+            font-family: Consolas, "Courier New", monospace;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        #editor-container {
+            background-color: #e8e8e8;
+            border-radius: 20px;
+            flex: 1 1 45%; /* Flex-grow, flex-shrink, and base width */
+            position: relative; /* Ensure the container has a relative position for child alignment */
+            display: flex;
+            flex-direction: column; /* Stack items vertically */
+        }
+    
+        #editor {
+            height: 500px;
+            width: 95%;
+            margin-left: 15px;
+            margin-right: 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-family:monospace;
+            overflow-x: auto;
+
+        }
+    
+    .button-group {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    padding: 0;
+    margin-right: calc(5% + 20px); /* Dynamically adjusted for responsiveness */
+    width: calc(97%); /* Matches the editor's width */
+    margin-left: auto; /* Aligns the group to the right while maintaining margin */
+    font-family: 'Bubblegum Sans', Arial, 'Helvetica Neue', Helvetica, sans-serif;
+}
+
+#run {
+    background-color: #E23D28;
+    font-size: 1.2rem;
+    font-weight: bolder;
+    padding: 5px 10px;
+    border: 5px solid #E23D28;
+    border-radius: 20px;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+#clear {
+    background-color: #4a90e2;
+    font-size: 1.2rem;
+    font-weight: bolder;
+    color: white;
+    padding: 5px 10px;
+    border: 5px solid #4a90e2;
+    border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+    
+        #run:hover {
+            background-color: #ab3020;
+            color: white;
+            border: 5px solid #ab3020;
+        }
+       
+        #clear:hover {
+            background-color: #2d6cb3;
+            color: white;
+            border: 5px solid #2d6cb3;
+        }
+    
+        #output {
+            white-space: pre-wrap;
+            background-color: #272822;
+            color: white;
+            font-size: 1.2rem;
+            padding: 10px;
+            width: 100%;
+            border-radius: 8px;
+            min-height: 105px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: auto;
+            margin-top: 15px;
+        }
+        .output-box {
+            background-color: #2d2d2d;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 1rem;
+            white-space: pre-wrap;
+            margin-top: 5px;
+        }
+
+        .output-label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+    
+        /* Media Query for Responsive Stacking */
+        @media (max-width: 768px) {
+            .container-fluid {
+                flex-direction: column; /* Stacks containers vertically */
+            }
+            
+            #editor-container {
+                width: 100%;
+                order: 1;
+            }
+            #chat-container {
+                width: 100%;
+                order: 2;
+            }
+            .button-group {
+        margin-bottom: 15px; /* Adds space below the buttons */
+    }
+        }
+    </style>
+
+    <body>
+        <div class="container-fluid mt-5">
+            <!-- Chat Section -->
+            <div id="chat-container">
+                <div id="chat-window"></div>
+                  <div class="d-flex mt-3">
+                  <input type="text" id="chat-input" class="form-control" placeholder="Type your message...">
+                  <button id="send-btn" class="btn">
+                  <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                  </button>
+        </div>
+
+            </div>
+    
+            <!-- Editor Section -->
+            <div id="editor-container">
+                <h3>🧩Begin with Python Adventure</h3>
+                <div id="editor"></div>
+                <div class="button-group mt-3 d-flex">
+                    <button id="run" class="btn btn-outline-danger mr-2">RUN <i id="loading-icon" class="fa fa-spinner fa-spin" style="display: none; margin-left: 5px;"></i></button>
+                    <button id="clear" class="btn btn-outline-primary">CLEAR</button>
+                </div>
+            </div>
+        </div>
+    <!-- Bootstrap JS CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Create a div for the overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent black background
+    overlay.style.zIndex = '999'; // Ensure it appears above other elements
+
+    // Create an img element for the GIF
+    const welcomeGif = document.createElement('img');
+    welcomeGif.src = "{% static 'images/Welcome4.gif' %}"; // Static path for the GIF
+    welcomeGif.style.position = 'fixed';
+    welcomeGif.style.top = '50%';
+    welcomeGif.style.left = '53%';
+    welcomeGif.style.transform = 'translate(-50%, -50%)'; // Center the GIF
+    welcomeGif.style.zIndex = '1000'; // Ensure it appears above the overlay
+    welcomeGif.style.width = '400px'; // Adjust size as needed
+    welcomeGif.style.height = 'auto';
+    // Append the overlay and GIF to the body
+    document.body.appendChild(overlay);
+    document.body.appendChild(welcomeGif);
+
+    // Optional: Remove the overlay and GIF after a delay (e.g., 3 seconds)
+    setTimeout(() => {
+        overlay.remove(); // Remove the overlay
+        welcomeGif.remove(); // Remove the GIF
+    }, 2000);
+});
+
+        // Function to send the message to the chatbot
+        function sendMessage(userInput) {
+            // Append the user input as a chat message
+            $('#chat-window').append(`
+                <div class="message user-message">
+                    <span class="emoji" style="float: right;">🙍‍♂️</span>
+                    <div class="message-bubble">${userInput}</div>
+                </div>
+            `);
+            $('#chat-input').val('');  // Clear input field
+            $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight); // Auto-scroll to the bottom
+
+            const thinkingMessage = $('<div class="message bot-message"><span class="emoji">🤖</span><div class="message-bubble"><em></em></div></div>');
+$('#chat-window').append(thinkingMessage);
+
+const dots = ['●', '●', '●'];
+let currentText = '';
+let currentIndex = 0;
+
+// Function to animate sliding dots
+const animateDots = () => {
+  // Append the current dot to the text
+  currentText += dots[currentIndex];
+  thinkingMessage.find('em').text(currentText);
+
+  // Increment the index and reset if needed
+  currentIndex++;
+  if (currentIndex >= dots.length) {
+    currentText = ''; // Clear the text to reset
+    currentIndex = 0;
+  }
+};
+
+// Update every 500ms
+setInterval(animateDots, 500);
+
+            // AJAX call to get response from the server
+            $.ajax({
+                url: '/chat/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ input: userInput }),
+                success: function(data) {
+                    thinkingMessage.remove();
+    
+                    // Display the response, adding code formatting if necessary
+                    displayBotResponse(data.response);
+                },
+                error: function(err) {
+                    thinkingMessage.remove();
+                    $('#chat-window').append(`
+                        <div class="message bot-message">
+                            <span class="emoji">🤖</span>
+                            <div id="chat-controls">
+                            <button id="tts-button">🔊 Play Bot Responses</button>
+                            </div>
+                            <div class="message-bubble">Error: ${err.responseJSON?.error || "Unexpected error"}</div>
+                        </div>
+                    `);
+                }
+            });
+        }
+        // Function to display successful output in a black box within the user message
+        function displayUserOutput(outputMessage) {
+    if (!outputMessage) return; // Ensure we do not display an undefined output
+
+    // Create an overlay for the shadowed background
+    const overlayElement = $('<div>', {
+        class: 'overlay',
+        css: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black
+            zIndex: 999, // Ensure it is below the GIF
+        }
+    });
+
+    // Create the GIF element
+    const gifElement = $('<img>', {
+        src: '/static/images/Box2.gif?v=' + new Date().getTime(), // Add timestamp to prevent caching
+        alt: 'Processing...',
+        class: 'centered-gif',
+        css: {
+            position: 'fixed',
+            top: '53%',
+            left: '90%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            width: '400px', // Larger size
+            height: 'auto',
+        },
+        on: {
+            error: function () {
+                console.error("GIF failed to load. Check the static file path.");
+                overlayElement.remove(); // Remove the overlay if the GIF fails
+                $(this).remove(); // Remove the GIF
+            },
+            load: function () {
+                console.log("GIF loaded successfully.");
+            }
+        }
+    });
+
+    // Append the overlay and GIF to the body
+    $('body').append(overlayElement).append(gifElement);
+
+    // Display the GIF and overlay for 8-10 seconds
+    setTimeout(() => {
+        overlayElement.remove(); // Remove the overlay
+        gifElement.remove(); // Remove the GIF
+    }, 4000); // 8000ms = 8 seconds, increase to 10000ms for 10 seconds
+
+    // Append the output message to the chat window
+    $('#chat-window').append(`
+        <div class="message user-message">
+            <span class="emoji" style="float: right;">🙍‍♂️</span>
+            <div class="message-bubble" style="display: flex; flex-direction: column; color: #0066b2;">
+                <strong>Executed Output:</strong>
+                <div class="output-box">${outputMessage}</div>
+            </div>
+        </div>
+    `);
+
+    // Auto-scroll to the bottom of the chat window
+    $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight);
+}
+  
+        // Function to display failed output in a black box within the user message
+        function displayUserError(errorMessage) {
+            if (!errorMessage) return; // Ensure we do not display an undefined error
+    // Create an overlay for the shadowed background
+    const overlayElement = $('<div>', {
+        class: 'overlay',
+        css: {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black
+            zIndex: 999, // Ensure it is below the GIF
+        }
+    });
+
+    // Create the GIF element
+    const gifElement = $('<img>', {
+        src: '/static/images/Sad3.gif?v=' + new Date().getTime(), // Add timestamp to prevent caching
+        alt: 'Processing...',
+        class: 'centered-gif',
+        css: {
+            position: 'fixed',
+            top: '53%',
+            left: '90%',
+            transform: 'translate(-50%, -50%)',
+            zIndex: 1000,
+            width: '400px', // Larger size
+            height: 'auto',
+        },
+        on: {
+            error: function () {
+                console.error("GIF failed to load. Check the static file path.");
+                overlayElement.remove(); // Remove the overlay if the GIF fails
+                $(this).remove(); // Remove the GIF
+            },
+            load: function () {
+                console.log("GIF loaded successfully.");
+            }
+        }
+    });
+
+    // Append the overlay and GIF to the body
+    $('body').append(overlayElement).append(gifElement);
+
+    // Display the GIF and overlay for 8-10 seconds
+    setTimeout(() => {
+        overlayElement.remove(); // Remove the overlay
+        gifElement.remove(); // Remove the GIF
+    }, 4000); // 8000ms = 8 seconds, increase to 10000ms for 10 seconds
+       
+    // Append the output message to the chat window
+            $('#chat-window').append(`
+                <div class="message user-message">
+                    <span class="emoji" style="float: right;">🙍‍♂️</span>
+                    <div class="message-bubble" style="display: flex; flex-direction: column; color: #D2122E;">
+                        <strong>Execution Failed:</strong>
+                        <div class="output-box">${errorMessage}</div>
+                    </div>
+                </div>
+            `);
+            $('#chat-window').scrollTop($('#chat-window')[0].scrollHeight); // Auto-scroll to the bottom
+        }
+    
+        // Function to send the output or error to the bot API for a response
+        function sendToBotAPI(message) {
+            if (!message) return; // Do not send an empty message to the bot API
+    
+            const thinkingMessage = $('<div class="message bot-message"><span class="emoji">🤖</span><div class="message-bubble"><em></em></div></div>');
+            $('#chat-window').append(thinkingMessage);
+
+const dots = ['●', '●', '●'];
+let currentText = '';
+let currentIndex = 0;
+
+// Function to animate sliding dots
+const animateDots = () => {
+  // Append the current dot to the text
+  currentText += dots[currentIndex];
+  thinkingMessage.find('em').text(currentText);
+
+  // Increment the index and reset if needed
+  currentIndex++;
+  if (currentIndex >= dots.length) {
+    currentText = ''; // Clear the text to reset
+    currentIndex = 0;
+  }
+};
+
+// Update every 500ms
+setInterval(animateDots, 500);
+            $.ajax({
+                url: '/chat/',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ input: message }),
+                success: function(data) {
+                    thinkingMessage.remove();
+                    if (data && data.response) {
+                        // Only display the bot response if it exists and is not undefined
+                        if (data.response) {
+                            displayBotResponse(data.response);
+                        } else {
+                            console.warn('Received an undefined response from the bot API.');
+                        }
+                    }
+                },
+                error: function(err) {
+                    thinkingMessage.remove();
+                    $('#chat-window').append(`
+                        <div class="message bot-message">
+                            <span class="emoji">🤖</span>
+                            <div class="message-bubble">Error: ${err.responseJSON?.error || "Unexpected error"}</div>
+                        </div>
+                    `);
+                }
+            });
+        }
+
+// Display Bot Response
+// function displayBotResponse(responseText) {
+//     const chatWindow = $('#chat-window');
+
+//     // Regular Expression to Detect Code Blocks
+//     const codeBlockRegex = /```(.*?)\n([\s\S]*?)```/g;
+//     // Regex to detect headings: looking for keywords or all uppercase lines
+//     const headingRegex = /^(NOTE|WARNING|IMPORTANT|TIP|EXAMPLE|CASE|\d+\.\s*|\*\*|##|[A-Z][a-z]+:|[A-Z\s]+):?$/gm;
+
+//     // Splitting text into plain text and code blocks
+//     let splitText = responseText.split(codeBlockRegex);
+//     let formattedResponse = "";
+
+//     // Loop through splitText and process each part
+//     for (let i = 0; i < splitText.length; i++) {
+//         if (i % 3 === 0) {
+//             // Plain text (not part of a code block)
+//             let plainText = splitText[i];
+
+//             // Apply bold formatting for headings and line breaks
+//             plainText = plainText.replace(headingRegex, function (match) {
+//                 return `<br><strong>${match.trim()}</strong>`;
+//             });
+//             plainText = plainText.replace(/(\n\s*\-)/g, '<br>•'); // Replace `-` with bullets
+//             plainText = plainText.replace(/(\n\d+\.)/g, '<br>$1'); // Handle numbered lists
+//             plainText = plainText.replace(/\n(?!<)/g, '<br>'); // General line breaks for paragraphs
+//             formattedResponse += plainText;
+//         } else if ((i - 1) % 3 === 0) {
+//             // Language specifier for the code block
+//             const language = splitText[i].trim() || "plaintext";
+//             const code = splitText[i + 1] || "";
+
+//             // Formatting the code block
+//             formattedResponse += `
+//                 <div class="code-block-container">
+//                     <div class="code-block-header">
+//                         <span class="code-language">${language}</span>
+//                         <button class="copy-btn" onclick="copyCode(this)">
+//                          <i class="fa-regular fa-copy"></i>
+//                         </button>
+//                     </div>
+//                     <pre class="language-${language}"><code class="language-${language}">${Prism.highlight(
+//                 code,
+//                 Prism.languages[language] || Prism.languages.plaintext,
+//                 language
+//             )}</code></pre>
+//                 </div>
+//             `;
+//             i++; // Skip the code part as it has already been processed
+//         }
+//     }
+
+//     // Constructing the HTML response
+//     const responseHTML = `
+//         <div class="message bot-message">
+//             <span class="emoji">🤖</span>
+//             <div class="message-bubble">
+//                 <button class="play-sound-btn" onclick="playBotResponseTTS(this)">
+//                     🔊
+//                 </button>
+//                 <br>
+//                 <br>
+//                 ${formattedResponse}
+//             </div>
+//         </div>
+//     `;
+
+//     chatWindow.append(responseHTML);
+//     chatWindow.scrollTop(chatWindow[0].scrollHeight); // Auto-scroll to the bottom
+
+//     // Highlight code blocks dynamically
+//     Prism.highlightAll();
+// }
+
+// // Function to play TTS for a specific bot message
+// function playBotResponseTTS(button) {
+//     const messageBubble = button.closest('.message-bubble');
+
+//     // Extract the main text of the response while excluding code blocks, emojis, and the sound icon
+//     let botText = messageBubble.innerText.trim(); // Get full text content (excluding HTML tags)
+
+//     // Remove emojis from the text
+//     botText = botText.replace(/[\p{Emoji}\u200B]/gu, ""); // Remove emojis and zero-width spaces
+
+//     // Remove the speaker volume/high sound or other unwanted words that may be read by TTS
+//     botText = botText.replace(/🔊/g, ""); // Remove the speaker icon from TTS content
+
+//     // Remove entire code block syntax (both the markdown and HTML tags)
+//     botText = botText.replace(/```[\s\S]*?```/g, ""); // Remove code blocks wrapped in markdown ```
+//     botText = botText.replace(/<pre[\s\S]*?<\/pre>/g, ""); // Remove code blocks wrapped in <pre> tags
+//     botText = botText.replace(/<code[\s\S]*?<\/code>/g, ""); // Remove <code> blocks
+
+//     // Proceed only if there is readable text
+//     if (botText.trim()) {
+//         const synth = window.speechSynthesis;
+//         const utterance = new SpeechSynthesisUtterance(botText);
+//         utterance.lang = 'en-US'; // Set language
+//         utterance.rate = 1.5; // Adjust speed
+//         utterance.pitch = 1.5; // Adjust pitch
+//         synth.speak(utterance);
+//     } else {
+//         alert("No readable text to speak.");
+//     }
+// }
+
+let currentUtterance = null; // Track the current speech synthesis instance
+let isSpeaking = false; // Track whether speech is currently happening
+let speechPosition = 0; // Track the current position in the speech
+let botText = ""; // Store the bot text for replay
+
+// Function to display bot response
+function displayBotResponse(responseText) {
+    const chatWindow = $('#chat-window');
+
+    // Regular Expression to Detect Code Blocks
+    const codeBlockRegex = /```(.*?)\n([\s\S]*?)```/g;
+    const headingRegex = /^(NOTE|WARNING|IMPORTANT|TIP|EXAMPLE|CASE|\d+\.\s*|\*\*|##|[A-Z][a-z]+:|[A-Z\s]+):?$/gm;
+
+    // Splitting text into plain text and code blocks
+    let splitText = responseText.split(codeBlockRegex);
+    // Strip code blocks from the text for TTS
+    const ttsText = responseText.replace(codeBlockRegex, '');
+    let formattedResponse = "";
+
+    // Loop through splitText and process each part
+    for (let i = 0; i < splitText.length; i++) {
+        if (i % 3 === 0) {
+            // Plain text (not part of a code block)
+            let plainText = splitText[i];
+
+            // Apply bold formatting for headings and line breaks
+            plainText = plainText.replace(headingRegex, function (match) {
+                return `<br><strong>${match.trim()}</strong>`;
+            });
+            plainText = plainText.replace(/(\n\s*\-)/g, '<br>•'); // Replace `-` with bullets
+            plainText = plainText.replace(/(\n\d+\.)/g, '<br>$1'); // Handle numbered lists
+            plainText = plainText.replace(/\n(?!<)/g, '<br>'); // General line breaks for paragraphs
+            formattedResponse += plainText;
+        } else if ((i - 1) % 3 === 0) {
+            // Language specifier for the code block
+            const language = splitText[i].trim() || "plaintext";
+            const code = splitText[i + 1] || "";
+
+            // Formatting the code block
+            formattedResponse += `
+                <div class="code-block-container">
+                    <div class="code-block-header">
+                        <span class="code-language">${language}</span>
+                        <button class="copy-btn" onclick="copyCode(this)">
+                         <i class="fa-regular fa-copy"></i>
+                        </button>
+                    </div>
+                    <pre class="language-${language}"><code class="language-${language}">${Prism.highlight(
+                code,
+                Prism.languages[language] || Prism.languages.plaintext,
+                language
+            )}</code></pre>
+                </div>
+            `;
+            i++; // Skip the code part as it has already been processed
+        }
+    }
+
+    // Constructing the HTML response
+    const responseHTML = `
+        <div class="message bot-message">
+            <span class="emoji">🤖</span>
+            <div class="message-bubble">
+                <button  
+                class="play-sound-btn" 
+                onclick="playBotResponseTTS(this)" 
+                style="border-radius: 20px; transition: all 0.3s; background-color: transparent; border: 2px solid #4a90e2; font-size: 16px; outline: none;"
+                onmouseover="this.style.backgroundColor='#174064'; this.style.border='2px solid #174064'; this.style.transform='scale(1.1)';" 
+                onmouseout="this.style.backgroundColor='transparent'; this.style.border='2px solid 174064'; this.style.transform='scale(1)';">
+                🔊
+                </button>
+                <br>
+                ${formattedResponse}
+            </div>
+        </div>
+    `;
+
+    chatWindow.append(responseHTML);
+    chatWindow.scrollTop(chatWindow[0].scrollHeight); // Auto-scroll to the bottom
+
+    // Highlight code blocks dynamically
+    Prism.highlightAll();
+}
+
+// Function to play TTS for a specific bot message
+function playBotResponseTTS(button) {
+    const messageBubble = button.closest('.message-bubble');
+    botText = messageBubble.innerText.trim(); // Get the text content (excluding HTML tags)
+
+    // Remove unwanted elements like emojis, sound icon, and code blocks
+    botText = botText.replace(/[\p{Emoji}\u200B]/gu, ""); // Remove emojis and zero-width spaces
+    botText = botText.replace(/🔊/g, ""); // Remove the speaker icon
+    botText = botText.replace(/```[\s\S]*?```/g, ""); // Remove markdown-style code blocks
+    botText = botText.replace(/<pre[\s\S]*?<\/pre>/g, ""); // Remove HTML <pre> code blocks
+    botText = botText.replace(/<code[\s\S]*?<\/code>/g, ""); // Remove HTML <code> blocks
+
+    // Proceed if there is readable text
+    if (botText.trim()) {
+        if (isSpeaking) {
+            // Stop the current speech if it's already speaking
+            window.speechSynthesis.cancel();
+            isSpeaking = false;
+        } else {
+            // If not speaking, start the speech from the last position
+            const synth = window.speechSynthesis;
+            const remainingText = botText.slice(speechPosition); // Get text from the last position
+
+            currentUtterance = new SpeechSynthesisUtterance(remainingText);
+            currentUtterance.lang = 'en-US'; // Set language
+            currentUtterance.rate = 1.5; // Adjust speed
+            currentUtterance.pitch = 1.5; // Adjust pitch
+
+            currentUtterance.onstart = function() {
+                isSpeaking = true;
+            };
+
+            currentUtterance.onboundary = function(event) {
+                // Track position when a boundary (word, sentence, etc.) is reached
+                if (event.name === 'word') {
+                    speechPosition = event.charIndex; // Save the current position
+                }
+            };
+
+            currentUtterance.onend = function() {
+                isSpeaking = false;
+                speechPosition = 0; // Reset position once speech ends
+            };
+
+            synth.speak(currentUtterance);
+        }
+    } else {
+        alert("No readable text to speak.");
+    }
+}
+
+
+
+function copyCode(button) {
+    const codeElement = button.closest('.code-block-container').querySelector('pre code');
+    const codeText = codeElement.textContent;
+
+    navigator.clipboard.writeText(codeText).then(() => {
+        alert("Code copied to clipboard!");
+    }).catch(err => {
+        console.error("Failed to copy text: ", err);
+    });
+}
+        
+        // Trigger send message on button click
+        $('#send-btn').click(function() {
+            const userInput = $('#chat-input').val();
+            if (userInput) {
+                sendMessage(userInput);
+            }
+        });
+    
+        // Trigger send message on "Enter" key press
+        $('#chat-input').keypress(function(event) {
+            if (event.which === 13) {  // Check if "Enter" key is pressed
+                event.preventDefault();
+                const userInput = $('#chat-input').val();
+                if (userInput) {
+                    sendMessage(userInput);
+                }
+            }
+        });
+    
+        // Display initial bot message with typing animation on page load
+        function displayWelcomeMessage() {
+            const messageContent = "Hi there👋🏻 I'm here to assist you in your Python Programming journey🙂";
+            const messageElement = `
+                <div class="message bot-message">
+                    <span class="emoji">🤖</span>
+                    <div class="message-bubble" style="font-weight: bold;"></div>
+                </div>
+            `;
+            
+            $('#chat-window').append(messageElement);
+    
+            let index = 0;
+            const messageBubble = $('#chat-window .message:last-child .message-bubble');
+            
+            function typeCharacter() {
+                if (index < messageContent.length) {
+                    messageBubble.append(messageContent.charAt(index));
+                    index++;
+                    setTimeout(typeCharacter, 30);
+                }
+            }
+    
+            typeCharacter();
+        }
+    
+        $(document).ready(function() {
+            displayWelcomeMessage();
+        });
+    
+        // Initialize Ace Editor
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.session.setMode("ace/mode/python");
+    
+        ace.require("ace/ext/language_tools");
+        editor.setOptions({
+            fontSize: "16px",
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: true
+        });
+    
+        let placeholderText = "# Enter your code here and click RUN to execute code.";
+        editor.setValue(placeholderText, -1);
+    
+        editor.on('focus', function() {
+            if (editor.getValue() === placeholderText) {
+                editor.setValue('');
+            }
+        });
+    
+        editor.on('blur', function() {
+            if (editor.getValue().trim() === '') {
+                editor.setValue(placeholderText, -1);
+            }
+        });
+    
+        document.getElementById('run').onclick = function() {
+    let code = editor.getValue();
+
+    if (code === placeholderText || code.trim() === '') {
+        alert("Please write Python code in the compiler area.");
+        return; // Exit the function if no code is written
+    }
+
+    // Disable the button and show the loading icon
+    const runButton = document.getElementById('run');
+    const loadingIcon = document.getElementById('loading-icon');
+    loadingIcon.style.display = 'inline-block';
+    runButton.disabled = true;
+
+    // Create overlay and GIF for loading
+    const overlay = document.createElement('div');
+    overlay.id = 'loading-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)'; // Semi-transparent black
+    overlay.style.zIndex = '9999';
+
+    const loadingGif = document.createElement('img');
+    loadingGif.src = "{% static 'images/Loading6.gif' %}";
+    loadingGif.style.position = 'fixed';
+    loadingGif.style.top = '50%';
+    loadingGif.style.left = '41%';
+    loadingGif.style.transform = 'translate(-50%, -50%)';
+    loadingGif.style.zIndex = '10000';
+    loadingGif.style.width = '400px'; // Adjust size as needed
+    loadingGif.style.height = 'auto';
+
+    document.body.appendChild(overlay);
+    document.body.appendChild(loadingGif);
+
+    // Send the fetch request to run Python code
+    fetch("{% url 'run_python_code' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ code: code })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const outputMessage = data.output || '';
+
+        // If the output message is undefined or empty, do not display it
+        if (!outputMessage) {
+            console.warn('No output received from the server.');
+            return; // Exit if no valid output is present
+        }
+
+        // Check for error keywords in the output message
+        if (outputMessage.includes("Error") || outputMessage.includes("Exception") || outputMessage.includes("Traceback")) {
+            displayUserError(outputMessage);
+            sendToBotAPI("Execution failed: " + outputMessage); // Send error to API
+        } else {
+            displayUserOutput(outputMessage);
+            sendToBotAPI("Executed output: " + outputMessage); // Send output to API
+        }
+    })
+    .catch(error => console.error('Error:', error))
+    .finally(() => {
+        // Hide the loading icon and re-enable the button
+        loadingIcon.style.display = 'none';
+        runButton.disabled = false;
+
+        // Remove the overlay and GIF
+        const overlay = document.getElementById('loading-overlay');
+        if (overlay) overlay.remove();
+        loadingGif.remove();
+    });
+};
+
+        document.getElementById('clear').onclick = function() {
+            editor.setValue(''); // Clear the editor content
+            editor.focus(); // Focus back on the editor
+        };
+    </script>
+ 
+</body>
+</html>
